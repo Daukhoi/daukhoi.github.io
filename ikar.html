@@ -1,282 +1,220 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网页虚拟输入法 - Ikar 字体版</title>
-    <style>
-        /* ==========================================
-           📍 字体引入与替换区域
-           ========================================== */
-        @font-face {
-            font-family: 'Ikar-Regular';
-            src: url('Ikar-Regular.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ikar 虚拟输入法优化版</title>
+<style>
+@font-face{
+ font-family:Ikar-Regular;
+ src:url("Ikar-Regular.ttf") format("truetype");
+}
+:root{
+ --bg:#f5f7fb;
+ --key:#fff;
+ --shadow:#9ca3af;
+ --panel:#d1d5db;
+ --text:#1f2937;
+}
+*{
+ box-sizing:border-box;
+ margin:0;
+ font-family:Ikar-Regular,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body{
+ height:100vh;
+ display:flex;
+ flex-direction:column;
+ overflow:hidden;
+ background:var(--bg);
+}
+.input-container{
+ flex:1;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ padding:20px;
+}
+#main-input{
+ width:min(800px,100%);
+ height:50%;
+ max-height:350px;
+ padding:20px;
+ font-size:18px;
+ border:2px solid #e0e4ec;
+ border-radius:12px;
+ outline:none;
+ resize:none;
+ box-shadow:0 4px 12px #00000012;
+}
+#main-input:focus{border-color:#4a90e2}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            /* 优先使用您的 Ikar-Regular 字体，若加载失败则降级使用系统默认字体 */
-            font-family: 'Ikar-Regular', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
+.keyboard-container{
+ background:var(--panel);
+ padding:12px 8px 24px;
+ box-shadow:0 -4px 10px #0002;
+}
+.keyboard-wrapper{
+ max-width:950px;
+ margin:auto;
+ display:flex;
+ flex-direction:column;
+ gap:8px;
+}
+.keyboard-row{
+ display:flex;
+ gap:6px;
+ justify-content:center;
+}
+.key{
+ flex:1;
+ max-width:75px;
+ height:54px;
+ border:0;
+ border-radius:6px;
+ background:var(--key);
+ color:var(--text);
+ font-size:18px;
+ cursor:pointer;
+ position:relative;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding-top:8px;
+ box-shadow:0 2px 0 var(--shadow);
+ user-select:none;
+}
+.key::before{
+ content:attr(data-badge);
+ position:absolute;
+ top:3px;
+ left:5px;
+ font-size:11px;
+ color:#9ca3af;
+ font-family:Arial,sans-serif;
+ pointer-events:none;
+}
+.key:active{
+ transform:translateY(2px);
+ box-shadow:none;
+}
+.functional{
+ background:#acb3bc;
+ font-size:15px;
+ padding:0;
+}
+.functional::before{display:none}
+.big{flex:1.8;max-width:120px}
+.space{flex:4;max-width:600px}
 
-        body {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background-color: #f5f7fb;
-            overflow: hidden;
-        }
-
-        /* 正中间的正文输入框区域 */
-        .input-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        #main-input {
-            width: 100%;
-            max-width: 800px;
-            height: 50%;
-            max-height: 350px;
-            padding: 20px;
-            font-size: 18px;
-            border: 2px solid #e0e4ec;
-            border-radius: 12px;
-            resize: none;
-            outline: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: border-color 0.3s;
-        }
-
-        #main-input:focus {
-            border-color: #4a90e2;
-        }
-
-        /* 屏幕下方的虚拟键盘区域 */
-        .keyboard-container {
-            background-color: #d1d5db;
-            padding: 12px 8px 24px 8px;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.08);
-            width: 100%;
-        }
-
-        .keyboard-wrapper {
-            max-width: 950px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .keyboard-row {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            gap: 6px;
-        }
-
-        /* 按键通用样式 */
-        .key {
-            flex: 1;
-            height: 54px; 
-            max-width: 75px;
-            background-color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: 500;
-            color: #1f2937;
-            cursor: pointer;
-            position: relative; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            user-select: none;
-            box-shadow: 0 2px 0 #9ca3af;
-            transition: background-color 0.1s, transform 0.05s;
-            padding-top: 8px; 
-        }
-
-        /* 📍 键盘左上角角标样式（使用黑体） */
-        .key::before {
-            content: attr(data-badge); 
-            position: absolute;
-            top: 3px;
-            left: 5px;
-            font-size: 11px;
-            font-weight: bold;
-            color: #9ca3af; 
-            font-family: "SimHei", "Heiti SC", "Microsoft YaHei", sans-serif; 
-            /* 💡 核心修复：防止角标拦截点击事件，让点击穿透到按钮本身 */
-            pointer-events: none; 
-        }
-
-        .key:active {
-            background-color: #e5e7eb;
-            transform: translateY(2px);
-            box-shadow: none;
-        }
-
-        /* 特殊功能键样式 */
-        .key.functional {
-            background-color: #acb3bc;
-            font-size: 15px;
-            box-shadow: 0 2px 0 #7e848c;
-            padding-top: 0; 
-        }
-        
-        .key.functional::before {
-            display: none; 
-        }
-        
-        .key.functional:active {
-            background-color: #939a1a;
-            box-shadow: none;
-        }
-
-        /* 特定大按键的宽度控制 */
-        .key-backspace {
-            flex: 1.8;
-            max-width: 120px;
-        }
-
-        .key-space {
-            flex: 4;
-            max-width: 600px;
-        }
-
-        .key-enter {
-            flex: 1.8;
-            max-width: 120px;
-        }
-    </style>
+@media(max-width:600px){
+ .key{
+  height:44px;
+  font-size:15px;
+ }
+}
+</style>
 </head>
 <body>
 
-    <div class="input-container">
-        <textarea id="main-input" placeholder="点击下方虚拟键盘开始输入内容..."></textarea>
-    </div>
+<div class="input-container">
+<textarea id="main-input" placeholder="点击下方虚拟键盘开始输入内容..."></textarea>
+</div>
 
-    <div class="keyboard-container">
-        <div class="keyboard-wrapper">
-            <div class="keyboard-row">
-                <button class="key" data-value="1" data-badge="1">1</button>
-                <button class="key" data-value="2" data-badge="2">2</button>
-                <button class="key" data-value="3" data-badge="3">3</button>
-                <button class="key" data-value="4" data-badge="4">4</button>
-                <button class="key" data-value="5" data-badge="5">5</button>
-                <button class="key" data-value="6" data-badge="6">6</button>
-                <button class="key" data-value="7" data-badge="7">7</button>
-                <button class="key" data-value="8" data-badge="8">8</button>
-                <button class="key" data-value="9" data-badge="9">9</button>
-                <button class="key" data-value="0" data-badge="0">0</button>
-                <button class="key" data-value="↑" data-badge="↑">↑</button>
-                <button class="key" data-value="↓" data-badge="↓">↓</button>
-                <button class="key" data-value="♢" data-badge="♢">♢</button>
-            </div>
-            
-            <div class="keyboard-row">
-                <button class="key" data-value="ñ" data-badge="ñ">ñ</button>
-                <button class="key" data-value="w" data-badge="w">w</button>
-                <button class="key" data-value="e" data-badge="e">e</button>
-                <button class="key" data-value="r" data-badge="r">r</button>
-                <button class="key" data-value="t" data-badge="t">t</button>
-                <button class="key" data-value="y" data-badge="y">y</button>
-                <button class="key" data-value="u" data-badge="u">u</button>
-                <button class="key" data-value="i" data-badge="i">i</button>
-                <button class="key" data-value="o" data-badge="o">o</button>
-                <button class="key" data-value="p" data-badge="p">p</button>
-                <button class="key" data-value="rr" data-badge="rr">rr</button>
-            </div>
+<div class="keyboard-container">
+<div class="keyboard-wrapper"></div>
+</div>
 
-            <div class="keyboard-row">
-                <button class="key" data-value="a" data-badge="a">a</button>
-                <button class="key" data-value="s" data-badge="s">s</button>
-                <button class="key" data-value="d" data-badge="d">d</button>
-                <button class="key" data-value="f" data-badge="f">f</button>
-                <button class="key" data-value="g" data-badge="g">g</button>
-                <button class="key" data-value="h" data-badge="h">h</button>
-                <button class="key" data-value="j" data-badge="j">j</button>
-                <button class="key" data-value="k" data-badge="k">k</button>
-                <button class="key" data-value="l" data-badge="l">l</button>
-                <button class="key" data-value="tt" data-badge="tt">tt</button>
-                <button class="key" data-value="pp" data-badge="pp">pp</button>
-            </div>
+<script>
+const rows=[
+"1 2 3 4 5 6 7 8 9 0 ↑ ↓ ♢",
+"ñ w e r t y u i o p rr",
+"a s d f g h j k l tt pp",
+"z x c v b n m ö ü kk",
+"< ' SPACE \" > ENTER"
+];
 
-            <div class="keyboard-row">
-                <button class="key" data-value="z" data-badge="z">z</button>
-                <button class="key" data-value="x" data-badge="x">x</button>
-                <button class="key" data-value="c" data-badge="c">c</button>
-                <button class="key" data-value="v" data-badge="v">v</button>
-                <button class="key" data-value="b" data-badge="b">b</button>
-                <button class="key" data-value="n" data-badge="n">n</button>
-                <button class="key" data-value="m" data-badge="m">m</button>
-                <button class="key" data-value="ö" data-badge="ö">ö</button>
-                <button class="key" data-value="ü" data-badge="ü">ü</button>
-                <button class="key" data-value="kk" data-badge="kk">kk</button>
-                <button class="key functional key-backspace" data-action="backspace">Backspace</button>
-            </div>
+const wrapper=document.querySelector(".keyboard-wrapper");
+const input=document.querySelector("#main-input");
 
-            <div class="keyboard-row">
-                <button class="key" data-value="&lt;" data-badge="&lt;">&lt;</button>
-                <button class="key" data-value="'" data-badge="'">'</button>
-                <button class="key key-space functional" data-action="space">space</button>
-                <button class="key" data-value='"' data-badge='"'>"</button>
-                <button class="key" data-value="&gt;" data-badge="&gt;">&gt;</button>
-                <button class="key functional key-enter" data-action="enter">enter</button>
-            </div>
-        </div>
-    </div>
+rows.forEach(row=>{
+ const div=document.createElement("div");
+ div.className="keyboard-row";
 
-    <script>
-        const mainInput = document.getElementById('main-input');
-        const keys = document.querySelectorAll('.key');
+ row.split(" ").forEach(k=>{
+  const btn=document.createElement("button");
+  btn.className="key";
 
-        keys.forEach(key => {
-            key.addEventListener('mousedown', (e) => {
-                e.preventDefault(); // 避免输入框失去焦点
-                
-                // 💡 备用防错：使用 key.getAttribute 替代 e.target 确保100%读取成功
-                const value = key.getAttribute('data-value');
-                const action = key.getAttribute('data-action');
-                
-                const startPos = mainInput.selectionStart;
-                const endPos = mainInput.selectionEnd;
-                const text = mainInput.value;
+  if(k==="SPACE"){
+   btn.textContent="space";
+   btn.dataset.action="space";
+   btn.classList.add("functional","space");
+  }else if(k==="ENTER"){
+   btn.textContent="enter";
+   btn.dataset.action="enter";
+   btn.classList.add("functional","big");
+  }else{
+   btn.textContent=k;
+   btn.dataset.value=k;
+   btn.dataset.badge=k;
+  }
 
-                if (value) {
-                    mainInput.value = text.substring(0, startPos) + value + text.substring(endPos);
-                    mainInput.selectionStart = mainInput.selectionEnd = startPos + value.length;
-                } else if (action === 'backspace') {
-                    if (startPos !== endPos) {
-                        mainInput.value = text.substring(0, startPos) + text.substring(endPos);
-                        mainInput.selectionStart = mainInput.selectionEnd = startPos;
-                    } else if (startPos > 0) {
-                        mainInput.value = text.substring(0, startPos - 1) + text.substring(endPos);
-                        mainInput.selectionStart = mainInput.selectionEnd = startPos - 1;
-                    }
-                } else if (action === 'space') {
-                    mainInput.value = text.substring(0, startPos) + ' ' + text.substring(endPos);
-                    mainInput.selectionStart = mainInput.selectionEnd = startPos + 1;
-                } else if (action === 'enter') {
-                    mainInput.value = text.substring(0, startPos) + '\n' + text.substring(endPos);
-                    mainInput.selectionStart = mainInput.selectionEnd = startPos + 1;
-                }
+  if(k==="kk"){
+   btn.dataset.value="kk";
+  }
 
-                mainInput.focus();
-            });
-        });
+  div.appendChild(btn);
+ });
+ wrapper.appendChild(div);
+});
 
-        window.onload = () => {
-            mainInput.focus();
-        };
-    </script>
+const back=document.createElement("button");
+back.className="key functional big";
+back.textContent="Backspace";
+back.dataset.action="backspace";
+wrapper.children[3].appendChild(back);
+
+
+function insertText(text){
+ const s=input.selectionStart;
+ const e=input.selectionEnd;
+ input.setRangeText(text,s,e,"end");
+ input.focus();
+}
+
+function backspace(){
+ const s=input.selectionStart;
+ const e=input.selectionEnd;
+
+ if(s!==e){
+  input.setRangeText("",s,e,"start");
+ }else if(s>0){
+  input.setRangeText("",s-1,s,"start");
+ }
+ input.focus();
+}
+
+wrapper.addEventListener("pointerdown",e=>{
+ const key=e.target.closest(".key");
+ if(!key)return;
+
+ e.preventDefault();
+
+ const action=key.dataset.action;
+ const value=key.dataset.value;
+
+ if(value) insertText(value);
+ if(action==="space") insertText(" ");
+ if(action==="enter") insertText("\n");
+ if(action==="backspace") backspace();
+});
+
+input.value=localStorage.getItem("ikar_text")||"";
+input.addEventListener("input",()=>{
+ localStorage.setItem("ikar_text",input.value);
+});
+
+input.focus();
+</script>
 </body>
 </html>
