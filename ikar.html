@@ -85,7 +85,7 @@
         /* 按键通用样式 */
         .key {
             flex: 1;
-            height: 54px; /* 略微加高以便容纳角标 */
+            height: 54px; 
             max-width: 75px;
             background-color: #ffffff;
             border: none;
@@ -94,26 +94,28 @@
             font-weight: 500;
             color: #1f2937;
             cursor: pointer;
-            position: relative; /* 用于角标绝对定位 */
+            position: relative; 
             display: flex;
             justify-content: center;
             align-items: center;
             user-select: none;
             box-shadow: 0 2px 0 #9ca3af;
             transition: background-color 0.1s, transform 0.05s;
-            padding-top: 8px; /* 让主字符稍微往下靠一点，错开角标 */
+            padding-top: 8px; 
         }
 
         /* 📍 键盘左上角角标样式（使用黑体） */
         .key::before {
-            content: attr(data-badge); /* 动态读取 HTML 的 data-badge 属性 */
+            content: attr(data-badge); 
             position: absolute;
             top: 3px;
             left: 5px;
-            font-size: 20px;
+            font-size: 11px;
             font-weight: bold;
-            color: #9ca3af; /* 浅灰色淡化显示，不喧宾夺主 */
-            font-family: "SimHei", "Heiti SC", "Microsoft YaHei", sans-serif; /* 强制指定黑体 */
+            color: #9ca3af; 
+            font-family: "SimHei", "Heiti SC", "Microsoft YaHei", sans-serif; 
+            /* 💡 核心修复：防止角标拦截点击事件，让点击穿透到按钮本身 */
+            pointer-events: none; 
         }
 
         .key:active {
@@ -127,11 +129,11 @@
             background-color: #acb3bc;
             font-size: 15px;
             box-shadow: 0 2px 0 #7e848c;
-            padding-top: 0; /* 功能键没有角标，不需要内边距偏移 */
+            padding-top: 0; 
         }
         
         .key.functional::before {
-            display: none; /* 功能键不需要角标 */
+            display: none; 
         }
         
         .key.functional:active {
@@ -237,4 +239,44 @@
         const mainInput = document.getElementById('main-input');
         const keys = document.querySelectorAll('.key');
 
-        keys.forEach(key =>
+        keys.forEach(key => {
+            key.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // 避免输入框失去焦点
+                
+                // 💡 备用防错：使用 key.getAttribute 替代 e.target 确保100%读取成功
+                const value = key.getAttribute('data-value');
+                const action = key.getAttribute('data-action');
+                
+                const startPos = mainInput.selectionStart;
+                const endPos = mainInput.selectionEnd;
+                const text = mainInput.value;
+
+                if (value) {
+                    mainInput.value = text.substring(0, startPos) + value + text.substring(endPos);
+                    mainInput.selectionStart = mainInput.selectionEnd = startPos + value.length;
+                } else if (action === 'backspace') {
+                    if (startPos !== endPos) {
+                        mainInput.value = text.substring(0, startPos) + text.substring(endPos);
+                        mainInput.selectionStart = mainInput.selectionEnd = startPos;
+                    } else if (startPos > 0) {
+                        mainInput.value = text.substring(0, startPos - 1) + text.substring(endPos);
+                        mainInput.selectionStart = mainInput.selectionEnd = startPos - 1;
+                    }
+                } else if (action === 'space') {
+                    mainInput.value = text.substring(0, startPos) + ' ' + text.substring(endPos);
+                    mainInput.selectionStart = mainInput.selectionEnd = startPos + 1;
+                } else if (action === 'enter') {
+                    mainInput.value = text.substring(0, startPos) + '\n' + text.substring(endPos);
+                    mainInput.selectionStart = mainInput.selectionEnd = startPos + 1;
+                }
+
+                mainInput.focus();
+            });
+        });
+
+        window.onload = () => {
+            mainInput.focus();
+        };
+    </script>
+</body>
+</html>
