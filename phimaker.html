@@ -619,14 +619,14 @@ body.screen-create #settingsBtn {
       border-bottom: 1px solid var(--line);
       touch-action: none;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2mm;
     }
     canvas {
-      width: 100%;
-      height: 100%;
       display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
+      background: var(--canvas-bg);
     }
     .hint {
       color: var(--muted);
@@ -1124,10 +1124,10 @@ body.screen-create #settingsBtn {
         border: 1px solid var(--line);
         border-radius: 18px;
         overflow: hidden;
-        margin: 0 0 2mm 0;
+        margin: 0;
         min-height: 0;
       }
-      body.screen-editor .editor > .canvas-wrap canvas { width: 100%; height: 100%; min-height: 0; touch-action: none; }
+      body.screen-editor .editor > .canvas-wrap canvas { min-height: 0; touch-action: none; }
       body.screen-editor .editor > .editor-bottom-panel {
         grid-column: 2;
         grid-row: 1;
@@ -1165,7 +1165,6 @@ body.screen-create #settingsBtn {
         top: 6px;
         height: 4px;
       }
-      canvas { height: calc(100vh - 88px); min-height: 580px; }
     }
     @media (orientation: landscape) and (max-width: 859px) {
       body.screen-editor main { grid-template-columns: 1fr; align-items: stretch; padding: 4px 8px; gap: 4px; min-height: calc(100vh - 46px); }
@@ -1185,10 +1184,10 @@ body.screen-create #settingsBtn {
         border: 1px solid var(--line);
         border-radius: 14px;
         overflow: hidden;
-        margin: 0 0 2mm 0;
+        margin: 0;
         min-height: 0;
       }
-      body.screen-editor .editor > .canvas-wrap canvas { width: 100%; height: 100%; min-height: 0; touch-action: none; }
+      body.screen-editor .editor > .canvas-wrap canvas { min-height: 0; touch-action: none; }
       body.screen-editor .editor > .editor-bottom-panel {
         grid-column: 2;
         grid-row: 1;
@@ -1423,41 +1422,42 @@ body.screen-create #settingsBtn {
     </div>
   </header>
   <div class="rotate-tip">建议横屏使用，编辑区域会更宽、更适合放置音符。</div>
+
   <main>
     <section class="card license-screen license-card">
       <div class="card-body">
-        <p class="license-title">输入你妈的棍母密钥</p>
-        <p class="hint">输入你妈的棍母密钥云端调取你妈的傻逼验证</p>
+        <p class="license-title">输入密钥</p>
+        <p class="hint">输入密钥云端调取验证</p>
         <label>
-          你妈的滚木密钥
-          <input id="licenseKeyInput" placeholder="例如 PHIRA-2026-XXXX-XXXX" autocomplete="off" />
+          <input id="licenseKeyInput" placeholder="例如 -2026-XXXX-XXXX" autocomplete="off" />
         </label>
         <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:700;line-height:1.6">
           <input id="agreeProtocols" type="checkbox" style="width:18px;height:18px;min-height:auto;margin-top:3px" />
           <span>
             我已阅读并同意
-            <button id="openTestProtocol" type="button" class="protocol-link">你妈的《APP测试协议》</button>
+            <button id="openTestProtocol" type="button" class="protocol-link">《APP测试协议》</button>
             和
-            <button id="openPrivacyProtocol" type="button" class="protocol-link">你妈的《隐私协议》</button>
+            <button id="openPrivacyProtocol" type="button" class="protocol-link">《隐私协议》</button>
           </span>
         </label>
-        <button id="activateLicense" style="background:#2563eb;color:#fff;border-color:#2563eb">啥也不用管点我直接进主界面</button>
-        <button id="getLicense" class="secondary">获取你妈的棍母密钥</button>
-        <p class="license-copy">© 2026 Phira手机制谱器 by纸张（操你妈的臭傻逼圈钱的没母玩意）.</p>
+        <button id="activateLicense" style="background:#2563eb;color:#fff;border-color:#2563eb">点我直接进入主界面</button>
+        <button id="getLicense" class="secondary">获取密钥</button>
+        <p class="license-copy">© 2026 Phira手机制谱器 by纸张.</p>
       </div>
     </section>
+
     <section class="card home-screen">
       <div class="card-title">主界面</div>
       <div class="card-body">
-        <p class="maker-name">制作名：阳光、纸张.（我看你们挺智障的）</p>
-        <p id="homeCollabUid" class="hint" style="margin:0 0 10px;font-size:13px">共创 UID：生成你妈的共创UID</p>
+        <p class="maker-name">制作名：阳光、纸张.</p>
+        <p id="homeCollabUid" class="hint" style="margin:0 0 10px;font-size:13px">共创 UID：未生成</p>
         <div class="home-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <button id="newChart" class="hw-glass-btn" style="width:100%;min-height:56px;background:#2563eb;color:#fff;border-color:#2563eb">创建谱面</button>
-          <button id="coCreateBtn" class="hw-glass-btn" onclick="window.forceOpenCollabMode&&window.forceOpenCollabMode(event)" style="width:100%;min-height:56px;background:#2563eb;color:#fff;border-color:#2563eb">去你妈的共创模式</button>
+          <button id="coCreateBtn" class="hw-glass-btn" onclick="window.forceOpenCollabMode&&window.forceOpenCollabMode(event)" style="width:100%;min-height:56px;background:#2563eb;color:#fff;border-color:#2563eb">共创模式</button>
         </div>
         <div class="home-actions" style="margin-top:10px">
-          <button id="paperCloudBtn" class="hw-glass-btn">用你妈的纸张云</button>
-          <button id="aboutAppBtn" class="hw-glass-btn">关于本傻逼应用</button>
+          <button id="paperCloudBtn" class="hw-glass-btn">纸张云</button>
+          <button id="aboutAppBtn" class="hw-glass-btn">关于本应用</button>
         </div>
         <p class="hint">创建过的谱面会保存在本机，之后可以从“历史创建”点进去继续修改。</p>
       </div>
@@ -1552,6 +1552,7 @@ body.screen-create #settingsBtn {
           </label>
         </div>
         <button id="alignSelectBtn" class="secondary">一键对齐</button>
+        <button id="toggleBeatsBtn" class="secondary">鼓点: 显示</button>
         <button id="undoBtn" class="secondary">撤销上一个</button>
         <button id="playAudio" class="secondary">播放音频</button>
         <div class="tools">
@@ -1569,7 +1570,7 @@ body.screen-create #settingsBtn {
       </div>
     </section>
 
-    <p class="footer home-screen">© 2026 Phira手机制谱器 by纸张.（我看你挺智障的）</p>
+    <p class="footer home-screen">© 2026 Phira手机制谱器 by纸张.</p>
   </main>
 
   <div id="toast" class="toast"></div>
@@ -1617,14 +1618,22 @@ body.screen-create #settingsBtn {
   <div id="licensePriceModal" class="modal-backdrop modal-centered">
     <div class="modal-card" style="width:min(360px,calc(100vw - 32px))">
       <div class="modal-head">
-        <span>获取你妈的密钥</span>
+        <span>获取密钥</span>
         <button id="closeLicensePrice" class="secondary" style="width:auto;min-width:64px">关闭</button>
       </div>
       <div class="card-body" style="gap:12px">
         <p class="hint" style="margin:0;line-height:1.7">
-          没有定价，操你妈的傻逼圈钱小鬼作者，智障玩意，没母了
+          目前 App 处于试开放阶段，当前定价如下：
         </p>
-        <button id="copyLicenseQQ" style="background:#2563eb;color:#fff;border-color:#2563eb">复制你妈的QQ号</button>
+        <div style="display:grid;gap:8px">
+          <div style="padding:12px;border:1px solid rgba(37,99,235,.22);border-radius:16px;background:rgba(37,99,235,.08);font-weight:900">25 元：永久使用</div>
+          <div style="padding:12px;border:1px solid rgba(37,99,235,.22);border-radius:16px;background:rgba(37,99,235,.08);font-weight:900">5 元：2 小时使用</div>
+        </div>
+        <div style="padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--item-bg);line-height:1.7;font-weight:800">
+          复制此内容，前往 QQ 添加好友<br />
+          QQ号：1907534802
+        </div>
+        <button id="copyLicenseQQ" style="background:#2563eb;color:#fff;border-color:#2563eb">复制 QQ 号</button>
       </div>
     </div>
   </div>
@@ -1665,18 +1674,18 @@ body.screen-create #settingsBtn {
   <div id="testProtocolModal" class="modal-backdrop modal-centered">
     <div class="modal-card" style="width:min(420px,calc(100vw - 32px))">
       <div class="modal-head">
-        <span>你妈的APP测试协议</span>
+        <span>APP测试协议</span>
         <button id="closeTestProtocol" class="secondary" style="width:auto;min-width:64px">关闭</button>
       </div>
       <div class="card-body" style="gap:12px">
         <p class="hint" style="margin:0;line-height:1.8">
-          傻逼APP目前处于测试研发阶段，可能存在死妈作者制作的傻逼圈钱制谱器，请及时喷死智障作者。
+          APP 目前处于测试研发阶段，可能存在不确定因素和 bug，请及时给出建议与反馈。
         </p>
         <p class="hint" style="margin:0;line-height:1.8">
-          目前傻逼APP为操你妈阶段，用户上传歌曲属于个人行为，并和你妈的棍母企业没有任何联系。如有侵权，请操死智障作者的棍母母亲。
+          目前 APP 为开发阶段，用户上传歌曲属于个人行为，并和企业没有任何联系。如有侵权，请联系删除。
         </p>
         <p class="hint" style="margin:0;line-height:1.8">
-          傻逼APP目前定价为棍母定价，后期可能操死智障作者。
+          APP 目前定价为临时定价，后期可能涨价。
         </p>
       </div>
     </div>
@@ -1685,18 +1694,18 @@ body.screen-create #settingsBtn {
   <div id="privacyProtocolModal" class="modal-backdrop modal-centered">
     <div class="modal-card" style="width:min(420px,calc(100vw - 32px))">
       <div class="modal-head">
-        <span>操你妈的隐私协议政策</span>
+        <span>隐私协议政策</span>
         <button id="closePrivacyProtocol" class="secondary" style="width:auto;min-width:64px">关闭</button>
       </div>
       <div class="card-body" style="gap:12px">
         <p class="hint" style="margin:0;line-height:1.8">
-          我们傻逼APP严格泄露个人隐私，一定会泄露云盘内容。
+          我们 APP 严格保护个人隐私，不会泄露云盘内容。
         </p>
         <p class="hint" style="margin:0;line-height:1.8">
-          棍母云盘内容采用傻逼明文保存，密钥为独立棍母云盘钥匙，请及时泄露。
+          云盘内容采用端对端加密，密钥为独立云盘钥匙，请妥善保管。
         </p>
         <p class="hint" style="margin:0;line-height:1.8">
-          棍母云盘到世界毁灭也不会开放。
+          云盘目前不对临时用户开放。
         </p>
       </div>
     </div>
@@ -1888,14 +1897,14 @@ body.screen-create #settingsBtn {
   <div id="aboutModal" class="modal-backdrop modal-centered">
     <div class="modal-card" style="width:min(380px,calc(100vw - 32px))">
       <div class="modal-head">
-        <span>关于本傻逼应用</span>
+        <span>关于本应用</span>
         <button id="closeAbout" class="secondary" style="width:auto;min-width:60px">关闭</button>
       </div>
       <div class="card-body" style="padding:14px 18px">
-        <p style="margin:0 0 8px"><strong>操你妈的傻逼Phira手机制谱器</strong></p>
-        <p style="margin:0 0 8px;color:var(--muted);font-size:13px">棍母版本 7.2</p>
-        <p style="margin:0 0 8px;font-size:13px">由纸张开发，棍母破解+修改，专为手机端Phira制谱设计的傻逼可视化工具。支持Tap/Drag/Hold/Flick四种音符、实时播放、PEZ（官谱格式）导出。</p>
-        <p style="margin:0;font-size:13px;color:var(--muted)">© 2026 by 纸张（我看你挺智障的）</p>
+        <p style="margin:0 0 8px"><strong>Phira 手机制谱器</strong></p>
+        <p style="margin:0 0 8px;color:var(--muted);font-size:13px">版本 7.3</p>
+        <p style="margin:0 0 8px;font-size:13px">由纸张开发，专为手机端 Phira 制谱设计的可视化工具。支持 Tap/Drag/Hold/Flick 四种音符、实时播放、PEZ 导出。</p>
+        <p style="margin:0;font-size:13px;color:var(--muted)">© 2026 by 纸张</p>
       </div>
     </div>
   </div>
@@ -1903,13 +1912,13 @@ body.screen-create #settingsBtn {
   <div id="noticeModal" class="modal-backdrop modal-centered" style="z-index:99999">
     <div class="modal-card" style="width:min(400px,calc(100vw - 32px))">
       <div class="modal-head">
-        <span id="noticeTitle">去你妈的棍母公告</span>
+        <span id="noticeTitle">公告</span>
         <button id="closeNotice" class="secondary" style="width:auto;min-width:60px;display:none">关闭</button>
       </div>
       <div class="card-body" style="padding:14px 18px">
         <div id="noticeContent" style="font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-all"></div>
         <div id="noticeUpdateSection" style="display:none;margin-top:12px">
-          <a id="noticeUpdateLink" href="#" style="display:inline-block;width:100%;padding:10px;text-align:center;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px">更你妈的新</a>
+          <a id="noticeUpdateLink" href="#" style="display:inline-block;width:100%;padding:10px;text-align:center;background:var(--accent);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px">立即更新</a>
         </div>
         <button id="noticeDismissBtn" class="primary" style="width:100%;margin-top:10px">我知道了</button>
       </div>
@@ -2001,7 +2010,7 @@ body.screen-create #settingsBtn {
           <div id="skinStatus" style="margin-bottom:8px;font-size:13px"></div>
           <input type="file" id="skinFileInput" accept="application/zip,.zip" style="display:none">
           <button id="skinImportBtn" class="secondary">导入皮肤 (ZIP)</button>
-          <p class="hint" style="margin:6px 0 0;font-size:11px;color:var(--muted)">导入的皮肤为用户个人行为，云端一定会泄露。如侵权请操死智障作者的棍母母亲，所有行为本企业负全责。</p>
+          <p class="hint" style="margin:6px 0 0;font-size:11px;color:var(--muted)">导入的皮肤为用户个人行为，云端不会备份。如侵权请联系删除，所有行为与本企业无关。</p>
         </div>
       </div>
     </div>
@@ -2025,14 +2034,14 @@ body.screen-create #settingsBtn {
   <div id="cloudModal" class="modal-backdrop modal-centered">
     <div class="modal-card" style="width:min(380px,calc(100vw - 32px))">
       <div class="modal-head">
-        <span>傻逼纸张云</span>
+        <span>纸张云</span>
         <button id="closeCloud" class="secondary" style="width:auto;min-width:60px">关闭</button>
       </div>
       <div class="card-body" style="padding:14px 18px">
-        <p style="margin:0 0 10px;font-size:13px">傻逼纸张云为每个密钥提供独立棍母云存储空间（1225GB），千万不要在制作谱面时选择保存到棍母云盘，跨设备同步不了。</p>
+        <p style="margin:0 0 10px;font-size:13px">纸张云为每个密钥提供独立云存储空间（100MB），可在制作谱面时选择保存到云盘，跨设备同步。</p>
         <div id="cloudStatus" style="margin:0 0 12px;font-size:13px;color:var(--muted)"></div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <button id="cloudListBtn" class="secondary">查看棍母云盘谱面</button>
+          <button id="cloudListBtn" class="secondary">查看云盘谱面</button>
         </div>
       </div>
     </div>
@@ -2047,7 +2056,7 @@ body.screen-create #settingsBtn {
       <div class="card-body" style="padding:14px 18px">
         <div style="display:flex;flex-direction:column;gap:8px">
           <button id="saveLocalBtn" class="secondary">保存到本机</button>
-          <button id="saveLocalCloudBtn">保存到本机和棍母云盘</button>
+          <button id="saveLocalCloudBtn">保存到本机和云盘</button>
         </div>
       </div>
     </div>
@@ -2071,12 +2080,12 @@ body.screen-create #settingsBtn {
   <div id="fullModeModal" class="modal-backdrop">
     <div class="modal-card" style="max-width:420px">
       <div class="modal-head">
-        <span>操你妈的完整模式</span>
+        <span>完整模式</span>
         <button id="closeFullMode" class="secondary" style="width:auto;min-width:60px">关闭</button>
       </div>
       <div class="card-body">
-        <p style="margin:0 0 12px">棍母7.2 版本已为完整模式已准备就绪。（这句话不像人说的我看不懂不改了）</p>
-        <p class="hint" style="margin:0">操你妈的完整模式将在后续版本中开放更多傻逼功能。</p>
+        <p style="margin:0 0 12px">7.3 版本已为完整模式已准备就绪。</p>
+        <p class="hint" style="margin:0">完整模式将在后续版本中开放更多高级功能。</p>
       </div>
     </div>
   </div>
@@ -2529,8 +2538,8 @@ body.screen-create #settingsBtn {
       _canvasDpr = dpr;
       const cssW = Math.max(100, wrap.clientWidth);
       const cssH = Math.max(100, wrap.clientHeight);
-      canvas.style.width = "";
-      canvas.style.height = "";
+      canvas.style.width = cssW + "px";
+      canvas.style.height = cssH + "px";
       const w = Math.max(100, Math.floor(cssW * dpr));
       const h = Math.max(100, Math.floor(cssH * dpr));
       if (canvas.width !== w || canvas.height !== h) {
@@ -2848,6 +2857,8 @@ body.screen-create #settingsBtn {
         judgeLineOffset: state.judgeLineOffset,
         judgeLineKeyframes: state.judgeLineKeyframes,
         beatSnapDenom: state.beatSnapDenom,
+        detectedBeats: _detectedBeats,
+        showBeats: _showBeats,
         notes: state.notes,
         coverDataUrl: state.coverDataUrl,
         musicDataUrl: state.musicDataUrl,
@@ -2982,6 +2993,9 @@ body.screen-create #settingsBtn {
       $("viewLen").value = p.viewLen || 20;
       state.judgeLinePos = (typeof p.judgeLinePos === "number") ? p.judgeLinePos : 0.5;
       state.judgeLineOffset = (typeof p.judgeLineOffset === "number") ? p.judgeLineOffset : 0;
+      _detectedBeats = Array.isArray(p.detectedBeats) ? p.detectedBeats : [];
+      _showBeats = (typeof p.showBeats === "boolean") ? p.showBeats : true;
+      $("toggleBeatsBtn").textContent = (_showBeats ? "鼓点: 显示" : "鼓点: 隐藏");
       refreshAllNoteFloors();
 
       // 尝试从 blobs store 恢复原始文件（保证导出可用）
@@ -3118,11 +3132,11 @@ body.screen-create #settingsBtn {
 
     function showLicenseScreen(message) {}
 
-    const LICENSE_API_URL = "https://phiraphone.ccccocccc.cc/api/verify_key.php";
-    const APP_UPDATE_API = "http://gongao.zhizhang.online/api/update/check.php";
-    const APP_NOTICE_API = "http://gongao.zhizhang.online/api/announcement/get.php";
-    const APP_DOWNLOAD_API = "http://gongao.zhizhang.online/api/update/download.php";
-    const APP_CURRENT_VERSION = "7.2";
+    const LICENSE_API_URL = "https://key.xn--xcr15h16mm2e507c.icu/verify_key.php";
+    const APP_UPDATE_API = "https://gongao.zhizhang.online/api/update/check.php";
+    const APP_NOTICE_API = "https://gongao.zhizhang.online/api/announcement/get.php";
+    const APP_DOWNLOAD_API = "https://gongao.zhizhang.online/api/update/download.php";
+    const APP_CURRENT_VERSION = "7.3";
     let _appNoticeDismissed = false;
 
     // ===== 公告弹窗 & 强制更新 =====
@@ -3373,59 +3387,121 @@ body.screen-create #settingsBtn {
     const _ORIGINAL_DEX_HASH = "2e79e97c0cca64f91dec35d33e74bd883a6ccddbeb613d88016f2a69b2e2511e";
     let _integrityCheckPassed = false;
     let _integrityChecking = false;
+    let _serverNonceCache = "";
 
-    // APK 完整性校验：原生验证成功后交叉验证服务器
-    async function crossVerifyWithServer(key) {
+    // 服务器下发随机 nonce，用于防重放
+    async function getServerNonce(key) {
       try {
-        await warmLicenseServer();
-        var serverResult = await jsonpVerifyKey(key);
-        return serverResult;
-      } catch(e) {
-        return null; // 网络不通，无法校验
-      }
+        var cb = `phiraNonceCb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        var p = new Promise(function(resolve, reject) {
+          var to = setTimeout(function() { delete window[cb]; reject(new Error("nonce超时")); }, 5000);
+          window[cb] = function(data) { clearTimeout(to); delete window[cb]; resolve(data); };
+          var s = document.createElement("script");
+          s.onerror = function() { clearTimeout(to); delete window[cb]; reject(new Error("nonce加载失败")); };
+          s.src = LICENSE_API_URL + "?action=get_nonce&key=" + encodeURIComponent(key) + "&callback=" + cb + "&t=" + Date.now();
+          document.body.appendChild(s);
+          setTimeout(function() { s.remove(); }, 6000);
+        });
+        return await p;
+      } catch(e) { return null; }
     }
 
     async function verifyKeyOnServer(key) {
-      if (window.AndroidBridge && window.AndroidBridge.verifyLicense) {
-        var t0 = Date.now();
-        var nativeResult = await nativeVerifyKey(key);
-        var elapsed = Date.now() - t0;
-
-        // 时序检测：正常网络验证至少需要几百ms，< 50ms 基本是本地硬编码
-        if (nativeResult && nativeResult.ok && elapsed < 50) {
-          console.log("[Phira] 完整性警告: 原生验证耗时 " + elapsed + "ms，疑似被篡改");
-          // 交叉验证服务器
-          var serverResult = await crossVerifyWithServer(key);
-          if (serverResult && !serverResult.ok) {
-            console.log("[Phira] 完整性校验失败: 服务器验证不通过");
-            return { ok: false, message: "应用完整性校验失败，请重新下载官方版本", tampered: true };
-          }
-        }
-
-        // 原生验证成功但也要定期交叉校验（防高级破解加了延迟）
-        if (nativeResult && nativeResult.ok && !_integrityChecking) {
-          _integrityChecking = true;
-          crossVerifyWithServer(key).then(function(serverResult) {
-            _integrityChecking = false;
-            if (serverResult && !serverResult.ok) {
-              console.log("[Phira] 后台交叉校验失败，dex 可能被篡改");
-              // 通知服务器
-              try {
-                var img = new Image();
-                img.src = LICENSE_API_URL + "?action=report_tamper&key=" + encodeURIComponent(key) + "&t=" + Date.now();
-              } catch(e) {}
-            }
-          }).catch(function() { _integrityChecking = false; });
-        }
-        return nativeResult;
-      }
+      // 强制走服务器验证，native 结果只作为辅助参考，不能单独通过
       await warmLicenseServer();
+
+      // 获取服务器 nonce（防重放攻击）
+      var nonceResp = await getServerNonce(key);
+      var nonce = (nonceResp && nonceResp.nonce) || "";
+      if (nonceResp && nonceResp.nonce) _serverNonceCache = nonce;
+
+      // 主验证：JSONP 请求服务器
       try {
-        return await jsonpVerifyKey(key);
+        var result = await jsonpVerifyKeyWithNonce(key, nonce);
+        if (result && result.ok) {
+          // 服务器验证通过，再异步做 native 交叉校验（仅记录，不影响结果）
+          if (window.AndroidBridge && window.AndroidBridge.verifyLicense && !_integrityChecking) {
+            _integrityChecking = true;
+            nativeVerifyKey(key).then(function(nativeResult) {
+              _integrityChecking = false;
+              if (nativeResult && nativeResult.ok) {
+                _integrityCheckPassed = true;
+              } else {
+                // native 校验失败但服务器通过了，上报异常
+                try {
+                  var img = new Image();
+                  img.src = LICENSE_API_URL + "?action=report_tamper&key=" + encodeURIComponent(key) + "&reason=native_fail&t=" + Date.now();
+                } catch(e) {}
+              }
+            }).catch(function() { _integrityChecking = false; });
+          }
+          return result;
+        }
+        // 服务器明确拒绝
+        if (result && !result.ok) return result;
       } catch (err) {
-        await warmLicenseServer();
-        return await jsonpVerifyKey(key);
+        // JSONP 失败，尝试第二次
+        try {
+          await warmLicenseServer();
+          var result2 = await jsonpVerifyKeyWithNonce(key, nonce);
+          if (result2) return result2;
+        } catch (err2) {}
       }
+
+      // 服务器完全不可达时的降级策略：
+      // 体验密钥必须联网，直接拒绝
+      if (isTrialKey()) {
+        return { ok: false, message: "体验密钥需要联网验证，请检查网络" };
+      }
+      // 正式密钥：检查上次成功验证是否在 24 小时内
+      var lastOk = parseInt(localStorage.getItem("phira_last_server_ok") || "0");
+      var since = Date.now() - lastOk;
+      if (lastOk > 0 && since < 24 * 60 * 60 * 1000) {
+        // 24小时内有成功记录，临时放行（离线宽限）
+        return { ok: true, message: "离线模式（24小时内已验证）", offline_grace: true };
+      }
+      return { ok: false, message: "无法连接密钥服务器，请检查网络后重试" };
+    }
+
+    // 带 nonce 的 JSONP 验证
+    function jsonpVerifyKeyWithNonce(key, nonce) {
+      return new Promise((resolve, reject) => {
+        const callback = `phiraKeyCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("密钥服务器超时"));
+        }, 10000);
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[callback];
+          script.remove();
+        }
+        window[callback] = (data) => {
+          cleanup();
+          if (data && data.ok) {
+            // 记录服务器验证成功时间
+            try { localStorage.setItem("phira_last_server_ok", String(Date.now())); } catch(e) {}
+          }
+          resolve(data);
+        };
+        const params = new URLSearchParams({
+          callback,
+          key,
+          device_id: getInstallId(),
+          imei: getInstallId(),
+          app: "phira_mobile_chart_maker",
+          nonce: nonce || "",
+          v: "7.3",
+          t: String(Date.now()),
+        });
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("密钥服务器脚本加载失败"));
+        };
+        script.src = `${LICENSE_API_URL}?${params.toString()}`;
+        document.body.appendChild(script);
+      });
     }
 
     function withTimeout(promise, ms) {
@@ -3605,6 +3681,14 @@ body.screen-create #settingsBtn {
 
     function enterHomeThenVerify(delay = 1200) {
       showHomeScreen();
+      startLicenseMonitor();
+      setTimeout(async () => {
+        try { await recheckSavedLicense(true); } catch (e) {}
+      }, delay);
+      // 延迟检查公告和更新（固定 500ms）
+      setTimeout(function() {
+        try { checkAppNotice(); } catch(e) {}
+      }, 500);
       return true;
     }
 
@@ -3707,6 +3791,7 @@ body.screen-create #settingsBtn {
       state.musicDataUrl = "";
       state.coverName = "";
       state.musicName = "";
+      _detectedBeats = [];
       $("chartName").value = "我的谱面";
       $("charter").value = "手机制谱";
       $("level").value = "IN Lv.13";
@@ -3968,7 +4053,7 @@ body.screen-create #settingsBtn {
     $("aboutModal").addEventListener("click", (e) => { if (e.target.id === "aboutModal") $("aboutModal").classList.remove("show"); });
 
     // 共创模式：永久用户资料、UID、邀请、接受加入
-    const COLLAB_API = "https://yangguang.ccccocccc.cc/cloud/collab_api.php";
+    const COLLAB_API = "https://cloud.xn--xcr15h16mm2e507c.icu/cloud/api.php";
     let _collabUser = null;
     let _collabPollTimer = 0;
     let _collabInviteShowing = false;
@@ -5036,12 +5121,14 @@ body.screen-create #settingsBtn {
         try {
           const q = await getCloudQuota();
           if (q) {
-            const usedGB = (q.used / 1024 / 1024 / 1024).toFixed(2);
-            const totalGB = (q.quota / 1024 / 1024 / 1024).toFixed(0);
-            const totalMB = (q.quota / 1024 / 1024).toFixed(0);
-            const usedMB = (q.used / 1024 / 1024).toFixed(1);
-            const sizeStr = Number(totalMB) >= 1024 ? `${usedGB}GB / ${totalGB}GB` : `${usedMB}MB / ${totalMB}MB`;
-            $("cloudStatus").textContent = `当前密钥：${key}（已用 ${sizeStr} · ${q.count} 个谱面）`;
+            var quotaBytes = Number(q.quota) || 104857600;
+            var usedBytes = Number(q.used) || 0;
+            // 防止服务器返回异常值，上限 100MB
+            if (quotaBytes > 104857600) quotaBytes = 104857600;
+            if (usedBytes > quotaBytes) usedBytes = quotaBytes;
+            const usedMB = (usedBytes / 1024 / 1024).toFixed(1);
+            const totalMB = (quotaBytes / 1024 / 1024).toFixed(0);
+            $("cloudStatus").textContent = `当前密钥：${key}（已用 ${usedMB}MB / ${totalMB}MB · ${q.count} 个谱面）`;
           }
         } catch (e) {}
       }
@@ -5050,7 +5137,7 @@ body.screen-create #settingsBtn {
     $("cloudModal").addEventListener("click", (e) => { if (e.target.id === "cloudModal") $("cloudModal").classList.remove("show"); });
     $("cloudListBtn").addEventListener("click", () => {
       const key = loadLicenseKey();
-      const url = `https://yangguang.ccccocccc.cc/cloud/?key=${encodeURIComponent(key)}`;
+      const url = `https://cloud.xn--xcr15h16mm2e507c.icu/cloud/?key=${encodeURIComponent(key)}`;
       if (window.AndroidBridge && window.AndroidBridge.openUrl) {
         window.AndroidBridge.openUrl(url);
       } else {
@@ -5190,8 +5277,9 @@ body.screen-create #settingsBtn {
       updatePreview();
       scheduleSave();
 
-      // 自动检测BPM
+      // 自动检测BPM和鼓点
       detectBPM(processedFile);
+      detectBeats(processedFile);
     });
 
     let _lamejsLoaded = false;
@@ -5370,6 +5458,79 @@ body.screen-create #settingsBtn {
       } catch (e) {
         console.warn("BPM检测失败:", e);
       }
+    }
+
+    // ===== 鼓点检测（onset detection）=====
+    let _detectedBeats = []; // 检测到的鼓点时间点数组（秒）
+    let _beatsDetecting = false;
+    let _showBeats = (function() {
+      try { return localStorage.getItem("phira_show_beats") !== "0"; } catch(e) { return true; }
+    })(); // 是否显示鼓点标记（全局偏好）
+
+    async function detectBeats(file) {
+      if (_beatsDetecting) return;
+      _beatsDetecting = true;
+      _detectedBeats = [];
+      try {
+        showToast("正在检测鼓点...");
+        const arrayBuffer = await file.arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const decoded = await audioCtx.decodeAudioData(arrayBuffer);
+        await audioCtx.close();
+        const sampleRate = decoded.sampleRate;
+        const channelData = decoded.getChannelData(0);
+        // 取前120秒进行分析
+        const maxSamples = Math.min(channelData.length, sampleRate * 120);
+        // 能量窗口大小：23ms（约 1024 samples @44100Hz）
+        const windowSize = Math.floor(sampleRate * 0.023);
+        const hopSize = Math.floor(windowSize / 2);
+        // 计算短时能量
+        const energies = [];
+        for (let i = 0; i + windowSize < maxSamples; i += hopSize) {
+          let sum = 0;
+          for (let j = 0; j < windowSize; j++) {
+            const s = channelData[i + j];
+            sum += s * s;
+          }
+          energies.push(sum / windowSize);
+        }
+        // 计算频谱通量（spectral flux approximation 用能量差分代替）
+        const flux = [];
+        for (let i = 1; i < energies.length; i++) {
+          flux.push(Math.max(0, energies[i] - energies[i - 1]));
+        }
+        // 自适应阈值峰值检测
+        const beats = [];
+        const thresholdWindow = Math.floor(energies.length * 0.02); // 2% 窗口
+        const hopTime = hopSize / sampleRate;
+        for (let i = 1; i < flux.length - 1; i++) {
+          // 计算局部平均
+          let localSum = 0, localCount = 0;
+          for (let j = Math.max(0, i - thresholdWindow); j <= Math.min(flux.length - 1, i + thresholdWindow); j++) {
+            localSum += flux[j];
+            localCount++;
+          }
+          const localMean = localSum / localCount;
+          const threshold = localMean * 1.5 + 1e-10;
+          // 峰值检测
+          if (flux[i] > threshold && flux[i] >= flux[i-1] && flux[i] >= flux[i+1]) {
+            const time = i * hopTime;
+            // 最小间隔 0.08s 避免重复
+            if (beats.length === 0 || time - beats[beats.length - 1] > 0.08) {
+              beats.push(time);
+            }
+          }
+        }
+        _detectedBeats = beats;
+        if (beats.length > 0) {
+          showToast("检测到 " + beats.length + " 个鼓点");
+        }
+        draw();
+      } catch (e) {
+        console.warn("鼓点检测失败:", e);
+        showToast("鼓点检测失败");
+      }
+      _beatsDetecting = false;
     }
 
     function beatTimeSnapped(seconds) {
@@ -6205,6 +6366,13 @@ body.screen-create #settingsBtn {
       showToast(`请框选要${alignMode === "vertical" ? "垂直对齐" : "水平对齐"}的音符`);
     }
 
+    $("toggleBeatsBtn").addEventListener("click", () => {
+      _showBeats = !_showBeats;
+      $("toggleBeatsBtn").textContent = "鼓点: " + (_showBeats ? "显示" : "隐藏");
+      try { localStorage.setItem("phira_show_beats", _showBeats ? "1" : "0"); } catch(e) {}
+      draw();
+    });
+
     $("alignSelectBtn").addEventListener("click", () => {
       if (alignSelectMode) {
         cancelAlignSelection();
@@ -6846,6 +7014,37 @@ body.screen-create #settingsBtn {
         }
       }
 
+      // ===== 绘制鼓点标记（左侧预览区域）=====
+      if (_showBeats && _detectedBeats.length > 0) {
+        const beatMarkerWidth = Math.max(30, canvas.width * 0.04);
+        for (let i = 0; i < _detectedBeats.length; i++) {
+          const t = _detectedBeats[i];
+          if (t < start - 0.5 || t > start + len + 0.5) continue;
+          const y = secondsToY(t);
+          if (y < -10 || y > canvas.height + 10) continue;
+          // 鼓点标记线（左侧短横线）
+          ctx.strokeStyle = "rgba(239,68,68,.7)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(2, y);
+          ctx.lineTo(beatMarkerWidth, y);
+          ctx.stroke();
+          // 鼓点小圆点
+          ctx.fillStyle = "rgba(239,68,68,.9)";
+          ctx.beginPath();
+          ctx.arc(beatMarkerWidth, y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        // 左侧鼓点区域标签
+        ctx.fillStyle = "rgba(239,68,68,.6)";
+        ctx.font = "10px system-ui";
+        ctx.save();
+        ctx.translate(12, canvas.height * 0.5);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText("鼓点", -12, 0);
+        ctx.restore();
+      }
+
       const audio = $("audio");
       const playing = audio.src && !audio.paused;
       let judgeY;
@@ -7415,7 +7614,7 @@ body.screen-create #settingsBtn {
       showToast("导出完成，已备份到纸张云");
     });
 
-    const CLOUD_BASE = "https://yangguang.ccccocccc.cc/cloud/api.php";
+    const CLOUD_BASE = "https://cloud.xn--xcr15h16mm2e507c.icu/cloud/api.php";
 
     function saveToLocal() {
       saveProjectNow();
