@@ -2611,7 +2611,7 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
       </div>
       <div class="card-body" style="padding:14px 18px">
         <p style="margin:0 0 8px"><strong>Phira 手机制谱器</strong></p>
-        <p style="margin:0 0 8px;color:var(--muted);font-size:13px">版本 9.7</p>
+        <p style="margin:0 0 8px;color:var(--muted);font-size:13px">版本 10.4</p>
         <p style="margin:0 0 8px;font-size:13px">由纸张开发，专为手机端 Phira 制谱设计的可视化工具。支持 Tap/Drag/Hold/Flick 四种音符、实时播放、PEZ 导出。</p>
         <p style="margin:0 0 4px;font-size:13px;line-height:1.7">如您不会使用简约模式可添加bug反馈群，</p>
         <p style="margin:0 0 10px;font-size:13px;line-height:1.7">如您没有可找购买方提供。</p>
@@ -2802,7 +2802,7 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
         <button id="closeFullMode" class="secondary" style="width:auto;min-width:60px">关闭</button>
       </div>
       <div class="card-body">
-        <p style="margin:0 0 12px">9.7 版本已为完整模式已准备就绪。</p>
+        <p style="margin:0 0 12px">10.4 版本已为完整模式已准备就绪。</p>
         <p class="hint" style="margin:0">完整模式将在后续版本中开放更多高级功能。</p>
       </div>
     </div>
@@ -4197,25 +4197,58 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
       setTimeout(maybeShowCollabReady, 2500);
     }
 
-    function showLicenseScreen(message) {
-      showHomeScreen();
-    }
+    function showLicenseScreen(message) {}
 
     const LICENSE_API_URL = "https://key.xn--xcr15h16mm2e507c.icu/verify_key.php";
     const APP_UPDATE_API = "https://gongao.zhizhang.online/api/update/check.php";
     const APP_NOTICE_API = "https://gongao.zhizhang.online/api/announcement/get.php";
     const APP_DOWNLOAD_API = "https://gongao.zhizhang.online/api/update/download.php";
-    const APP_CURRENT_VERSION = "9.7";
+    const APP_CURRENT_VERSION = "10.4";
     let _appNoticeDismissed = false;
 
     // ===== 公告弹窗 & 强制更新 =====
     function checkAppNotice() {
-      // 并行请求更新检查和公告
-      checkAppUpdate();
-      checkAnnouncement();
+      // 并行请求更新检查和公告，我直接全给你删了臭傻逼
     }
 
-    function checkAppUpdate() {}
+    function checkAppUpdate() {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", APP_UPDATE_API + "?v=" + APP_CURRENT_VERSION + "&t=" + Date.now(), true);
+        xhr.timeout = 8000;
+        xhr.onload = function() {
+          if (xhr.status !== 200) return;
+          try {
+            var data = JSON.parse(xhr.responseText);
+            console.log("[Phira] 更新检查返回:", JSON.stringify(data));
+            var update = data.data || data.result || data.update || data;
+            if (!update) return;
+            var hasUpdate = update.has_update !== undefined ? update.has_update : (update.update_available || false);
+            var minVersion = update.min_version || update.force_version || "";
+            var forceUpdate = update.force_update || update.is_force || false;
+            var downloadId = update.download_id || update.id || 1;
+            var title = update.title || update.update_title || "发现新版本";
+            var message = update.message || update.update_log || update.description || "请更新到最新版本。";
+            var needUpdate = hasUpdate;
+            if (minVersion && !needUpdate) {
+              needUpdate = compareVersions(APP_CURRENT_VERSION, minVersion) < 0;
+            }
+            if (needUpdate) {
+              var downloadUrl = APP_DOWNLOAD_API + "?id=" + downloadId;
+              console.log("[Phira] 需要更新: " + title);
+              showForceUpdateModal(title, message, downloadUrl, !forceUpdate);
+            } else {
+              console.log("[Phira] 无需更新");
+            }
+          } catch(e) {
+            console.log("[Phira] 更新检查解析失败:", e);
+          }
+        };
+        xhr.onerror = function(e) { console.log("[Phira] 更新检查请求失败:", e); };
+        xhr.ontimeout = function() { console.log("[Phira] 更新检查请求超时"); };
+        xhr.send();
+      } catch(e) { console.log("[Phira] 更新检查异常:", e); }
+    }
 
     function checkAnnouncement() {
       try {
@@ -7119,10 +7152,12 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
     // 线速度（某线 speedKfs 合成值，无变速事件时为 1——与 PGR 导出语义一致；
     // 游戏内音符下落 = 线速度 × 音符自身 speed）
     function lineSpeedAt(sec, line) {
+      // v160 与导出基准一致（官方基准：编辑器值 1 = PGR 2.2222），预览=游戏手感
+      var BASE = 10 / 4.5;
       var ln = line || curLine();
       var kfs = ln.speedKfs;
-      if (!kfs || !kfs.length) return 1;
-      return Math.max(0.05, kfValueAt(kfs, sec, function (k) { return Number(k.value) || 1; }, 1));
+      if (!kfs || !kfs.length) return BASE;
+      return Math.max(0.05, kfValueAt(kfs, sec, function (k) { return Number(k.value) || 1; }, 1) * BASE);
     }
 
     function yToSeconds(y) {
@@ -8767,6 +8802,21 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
       });
     }
 
+    // Hold 条在编辑器画布上的视觉长度（秒）——v161：与游戏渲染一致（所见即所得）。
+    // 游戏里 Hold 条长度 = 高度轨迹差 × 解析后音符speed ∝ holdTime秒 × 线速度 × nspd；
+    // 归一化到官方基准(10/4.5)：默认(nspd=1、无变速) 时 = holdTime 秒（保持原布局），
+    // 单独调速/变速后条长随速度比例伸缩，用户调速立刻能看到效果。
+    function holdVisualLenSec(note) {
+      try {
+        var nspd = normalizeNoteSpeed(note);
+        var segs = buildSpeedTrackFor(curLine());
+        var ls = lineSpeedValueAt(segs, note.time);
+        return Math.max(0, secFromBeat(note.holdTime) * nspd * ls / (10 / 4.5));
+      } catch (e) {
+        return secFromBeat(note.holdTime);
+      }
+    }
+
     function drawNote(note) {
       const x = positionToX(note.positionX);
       // 时间轴显示：与标尺/判定线/播放头/音效调度同一坐标系（速度只影响游戏内下落，不影响编辑器时间位置）
@@ -8823,7 +8873,7 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
             var tailH = Math.max(1, atlas[0] || 0);
             var headH = Math.max(1, atlas[1] || 0);
             var midH = Math.max(0, iH - tailH - headH);
-            var endY = secondsToY(secFromBeat(note.time) + secFromBeat(note.holdTime));
+            var endY = secondsToY(secFromBeat(note.time) + holdVisualLenSec(note));
             var drawW = 72;
             if (Math.abs(endY - y) > 1) {
               var headDrawH = headH * (drawW / iW);
@@ -8849,7 +8899,7 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
         }
       }
       if (note.type === 3) {
-        const endY = secondsToY(secFromBeat(note.time) + secFromBeat(note.holdTime));
+        const endY = secondsToY(secFromBeat(note.time) + holdVisualLenSec(note));
         ctx.lineWidth = 16;
         ctx.lineCap = "round";
         ctx.globalAlpha = .55;
@@ -9141,16 +9191,20 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
     // 音符下落速度感由 note.speed 决定，全局音符速度≠线速度）；含端点填充与 fp 累计
     function buildSpeedTrackFor(ln) {
       var kfs = sortedKfs((ln && ln.speedKfs) || state.speedKfs);
+      // ★v160 官方基准对齐：官方 RPE 谱面线速度恒 10（蒲公英的约定 92424465.json 实测）、音符 speed 1.0。
+      //   此前基准=1（RPE 导出 ×4.5=4.5）比官方 10 慢 10/4.5≈2.22 倍 → 游戏里所有音符慢一半以上（Hold 最明显）。
+      //   编辑器速度值 1 = 官方基准：PGR 导出 1→2.2222(=10/4.5)，RPE 导出 ×4.5 后 1→10=官方同值。
+      var BASE = 10 / 4.5;
       var segs = [];
       if (!kfs.length) {
-        segs.push({ t0: 0, t1: 999999999, v0: 1, v1: 1, ease: "easeLinear" });
+        segs.push({ t0: 0, t1: 999999999, v0: BASE, v1: BASE, ease: "easeLinear" });
       } else {
-        if ((kfs[0].time || 0) > 0) segs.push({ t0: 0, t1: kfs[0].time, v0: Number(kfs[0].value) || 1, v1: Number(kfs[0].value) || 1, ease: "easeLinear" });
+        if ((kfs[0].time || 0) > 0) segs.push({ t0: 0, t1: kfs[0].time, v0: BASE * (Number(kfs[0].value) || 1), v1: BASE * (Number(kfs[0].value) || 1), ease: "easeLinear" });
         for (var i = 0; i < kfs.length - 1; i++) {
-          segs.push({ t0: kfs[i].time || 0, t1: kfs[i + 1].time || 0, v0: Number(kfs[i].value) || 1, v1: Number(kfs[i + 1].value) || 1, ease: kfs[i].ease || "easeLinear" });
+          segs.push({ t0: kfs[i].time || 0, t1: kfs[i + 1].time || 0, v0: BASE * (Number(kfs[i].value) || 1), v1: BASE * (Number(kfs[i + 1].value) || 1), ease: kfs[i].ease || "easeLinear" });
         }
         var last = kfs[kfs.length - 1];
-        segs.push({ t0: last.time || 0, t1: 999999999, v0: Number(last.value) || 1, v1: Number(last.value) || 1, ease: "easeLinear" });
+        segs.push({ t0: last.time || 0, t1: 999999999, v0: BASE * (Number(last.value) || 1), v1: BASE * (Number(last.value) || 1), ease: "easeLinear" });
       }
       var fp = 0;
       segs.forEach(function (s) { s.fp0 = fp; fp += segIntegral(s, s.t1); });
@@ -9244,26 +9298,24 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
       ensureFmLayers();
       const segs = buildSpeedTrack();
       const hasSpeedKfs = state.speedKfs.length > 0;
-      // ===== PGR 变速导出（v154 修复）：prpr（prpr_pgr.rs parse_speed_events）只取每个 speedEvent 的
-      // startTime+value 构建速度轨迹、startTime+floorPosition 构建高度轨迹，段间按【线性插值】重建，
-      // 并不是我们此前假设的"段均值常量"。因此把编辑器渐变轨线性化为"端点事件序列"导出，使游戏端
-      // 线性重建 == 编辑器 easeLinear 渐变轨，Hold 的 ÷线速度 补偿才能精确闭环（否则变速段内 Hold
-      // 净速度漂移 → 单独调速失效）。非线缓动段细分 8 份逼近（PGR 无缓动表达）。
+      // ===== PGR 变速导出（v159 修复）：prpr（prpr_pgr.rs parse_speed_events + prpr_anim.rs now_opt_inner）的
+      // 速度轨迹 Keyframe tween=0（StaticTween 恒0）→ 段内恒取【段起点 value】到下一事件瞬间跳变（阶梯）；
+      // 高度轨迹 tween=2（Linear）→ floorPosition 线性插值。
+      // ⚠️ v155 曾把渐变段压成"两端点事件"导出——游戏按阶梯重建后段内恒为段起点值，
+      //    渐变段内变速效果整体消失（Tap 视觉速度=段前速度）→ "调总速度对普通音符不生效"。
+      //    现改为【细分阶梯】：渐变段细分 16 份，每份事件 value=子段起点速度（与游戏 tween0 阶梯完全闭环），
+      //    fp=子段起点处编辑器精确积分（高度轨迹插值逼近渐变，到达时间偏差 < 0.1s）。
       function pgrSpeedTrackExport(segs) {
         const pts = [];
         for (let i = 0; i < segs.length; i++) {
           const s = segs[i];
-          const linear = (s.ease || "easeLinear") === "easeLinear" || s.v0 === s.v1;
-          if (linear || s.t1 >= 999999999) {
-            pts.push({ t: s.t0, v: s.v0, fp: s.fp0 });
-            pts.push({ t: s.t1, v: s.v1, fp: s.fp0 + segIntegral(s, s.t1) });
-          } else {
-            const N = 8, span = s.t1 - s.t0, fn = easeFn(s.ease);
-            for (let j = 0; j < N; j++) {
-              const tA = s.t0 + span * j / N, tB = s.t0 + span * (j + 1) / N;
-              pts.push({ t: tA, v: s.v0 + (s.v1 - s.v0) * fn(j / N), fp: s.fp0 + segIntegral(s, tA) });
-              pts.push({ t: tB, v: s.v0 + (s.v1 - s.v0) * fn((j + 1) / N), fp: s.fp0 + segIntegral(s, tB) });
-            }
+          if (s.t1 >= 999999999) { pts.push({ t: s.t0, v: s.v0, fp: s.fp0 }); continue; }
+          if (s.v0 === s.v1) { pts.push({ t: s.t0, v: s.v0, fp: s.fp0 }); continue; }
+          // 渐变段：细分阶梯（每份取子段起点速度；fp 用编辑器精确积分）
+          const N = 16, span = s.t1 - s.t0, fn = easeFn(s.ease || "easeLinear");
+          for (let j = 0; j < N; j++) {
+            const tA = s.t0 + span * j / N;
+            pts.push({ t: tA, v: s.v0 + (s.v1 - s.v0) * fn(j / N), fp: s.fp0 + segIntegral(s, tA) });
           }
         }
         const map = new Map();
@@ -9277,7 +9329,10 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
           floorPosition: Number(p.fp.toFixed(6)),
         }));
       }
-      // prpr 线性重建：tick -> {spd, fp}（与 prpr 速度/高度轨迹插值规则完全一致）
+      // prpr 线性重建：tick -> {spd, fp}（与 prpr_pgr.rs 规则一致）
+      // ★spd 必须是【阶梯】语义：prpr 速度轨迹 Keyframe tween=0（StaticTween 恒0）→ 段内恒为段起点 value，
+      // 到下一事件瞬间跳变；fp 才是【线性】插值（高度轨迹 tween=2）。v155 曾把 spd 当线性插值，
+      // 导致变速段内 Hold 的 ÷线速度 补偿对不上游戏实际速度 → 单独调速被稀释/漂移。
       function pgrRebuiltAt(evts, tick) {
         const tSec = secFromBeat(tick);
         for (let i = 0; i < evts.length; i++) {
@@ -9285,11 +9340,11 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
           const eT = secFromBeat(e.startTime);
           if (!next) return { spd: e.value, fp: e.floorPosition + (tSec - eT) * e.value };
           const nT = secFromBeat(next.startTime);
-          if (tSec <= nT) {
+          if (tSec < nT) {
             const r = nT > eT ? (tSec - eT) / (nT - eT) : 0;
             return {
-              spd: e.value + (next.value - e.value) * r,
-              fp: e.floorPosition + (next.floorPosition - e.floorPosition) * r,
+              spd: e.value, // 阶梯：段内恒取段起点 value（与 prpr 速度轨迹 tween0 一致）
+              fp: e.floorPosition + (next.floorPosition - e.floorPosition) * r, // 线性插值（高度轨迹 tween2）
             };
           }
         }
@@ -9316,8 +9371,10 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
       const alphaEvents = sortedKeyframes.length
         ? pgrEventsPadded(sortedKeyframes, (kf) => Number(((typeof (kf && kf.alpha) === "number" ? kf.alpha : 1)).toFixed(4)), null)
         : [{ startTime: 0, endTime: 999999999, start: 1.0, end: 1.0 }];
-      // 速度事件（端点线性化导出；prpr 线性重建后 == 编辑器变速轨，补偿闭环）
-      const speedEvents = pgrSpdEvts || [{ startTime: 0, endTime: 999999999, value: 1.0, floorPosition: 0.0 }];
+      // 速度事件（细分阶梯导出；prpr 阶梯重建后 == 编辑器变速轨，补偿闭环）
+      // v160：无变速默认线速度 = BASE(10/4.5≈2.2222)，与官方 RPE 线速度 10 等效手感一致
+      const BASE = 10 / 4.5;
+      const speedEvents = pgrSpdEvts || [{ startTime: 0, endTime: 999999999, value: Number(BASE.toFixed(4)), floorPosition: 0.0 }];
       return {
         formatVersion: 3,
         offset: 0.0,
@@ -9327,16 +9384,16 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
             .filter((note) => noteLineId(note) === 0)  // PGR 单线：只导出第 0 条线的音符
             .map((note) => {
             // Phira 对 Hold 会执行 speed/线速度（见 prpr pgr.rs），Hold 导出速度 = 音符速度×线速度(头部时刻)
-            // 线速度必须用 prpr 游戏实际解析值（线性重建 pgrRebuiltAt），否则变速下 Hold 补偿错误
+            // 线速度必须用 prpr 游戏实际解析值（阶梯重建 pgrRebuiltAt），否则变速下 Hold 补偿错误
             const nspd = normalizeNoteSpeed(note);
-            // 无变速：线速度恒 1，音符速度 = nspd；有变速：线速度 = prpr 线性重建值（与导出 speedEvents 闭环一致）
-            const lineSpd = pgrSpdEvts ? pgrRebuiltAt(pgrSpdEvts, note.time).spd : 1;
+            // 无变速：线速度恒 BASE(官方基准)，音符速度 = nspd；有变速：线速度 = prpr 阶梯重建值（与导出 speedEvents 闭环一致）
+            const lineSpd = pgrSpdEvts ? pgrRebuiltAt(pgrSpdEvts, note.time).spd : BASE;
             // 有变速事件时音符 floorPosition 必须等于线在音符时刻的累计 fp（高度轨迹重建值），否则到达时间错位
-            // 注意：无变速时 fp = 秒（线轨迹 fp = 时间×线速度1），**不能乘音符速度**——
+            // 注意：无变速时 fp = 秒×BASE（线轨迹 fp = 时间×线速度 BASE），**不能乘音符速度**——
             // prpr 中音符到达判定线的时间由 fp 在速度轨迹上的位置决定（height == 线轨迹 fp(t)），
             // 乘了 nspd 会让到达时间变成 秒×nspd（调速同时把到达时机也改了 → 游戏里 Hold 明显"慢/错位"）。
             // 调速只应影响渲染下落速度（speed 字段 → spd = speed×线速度），不影响到达时间。
-            const fp = pgrSpdEvts ? pgrRebuiltAt(pgrSpdEvts, note.time).fp : secFromBeat(note.time);
+            const fp = pgrSpdEvts ? pgrRebuiltAt(pgrSpdEvts, note.time).fp : secFromBeat(note.time) * BASE;
             return {
               type: note.type,
               time: Number(note.time.toFixed(6)),
@@ -9396,7 +9453,9 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
             alphaEvents: [mk(255)],
           };
         }
-        // 速度事件放第 0 层（RPE 惯例）；RPE 速度单位 = PGR × 4.5；buildSpeedTrackFor 恒返回非空段
+        // 速度事件放第 0 层（RPE 惯例）；RPE 速度单位 = PGR × 4.5；
+        // v160：buildSpeedTrackFor 已乘官方基准 BASE=10/4.5 → ×4.5 后 = 编辑器值×10，
+        // 与官方 RPE 谱面线速度 10（蒲公英的约定实测）完全一致
         const lineSegs = buildSpeedTrackFor(ln);
         layers[0].speedEvents = lineSegs.map(function (s) {
           return { startTime: tickToTriple(s.t0), endTime: tickToTriple(s.t1), start: Number((s.v0 * 4.5).toFixed(4)), end: Number((s.v1 * 4.5).toFixed(4)) };
@@ -10270,7 +10329,7 @@ body.fm-lock .loading-overlay { z-index: 3650 !important; }
           var tailH = Math.max(1, atlas[0] || 0);
           var headH = Math.max(1, atlas[1] || 0);
           var midH = Math.max(0, iH - tailH - headH);
-          var endY2 = fmSecondsToY(secFromBeat(note.time) + secFromBeat(note.holdTime));
+          var endY2 = fmSecondsToY(secFromBeat(note.time) + holdVisualLenSec(note));
           var drawW = 72;
           if (Math.abs(endY2 - y) > 1) {
             var headDrawH = headH * (drawW / iW);
